@@ -1,0 +1,15 @@
+{
+    "incre_method":"kanfusion",
+    "seed":1992,
+    "init_lr":0.01,
+    "incre_lr":0.01,
+    "weight_decay":2e-4,
+    "lr_decay":2e-4,
+    "milestones":[60,120,170],
+    "batch_size":128,
+    "num_workers":4,
+    "init_epochs":1,
+    "incre_epochs":1,
+    "save_path":"runs/results.txt",
+    "selector_epochs":100
+}
