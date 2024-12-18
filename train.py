@@ -1,7 +1,7 @@
 import torch
 import datetime
 from utils.data_manager import DataManager
-from utils.get_incre import get_incre_method
+from incre_methods.KANFusion import KANFusion
 import logging
 import time
 def train(args):
@@ -14,7 +14,7 @@ def train(args):
                                 increment=args["increment"], 
                                 seed=args["seed"])
     logging.basicConfig(
-    filename=f'runs/{args['incre_method']}_{time_str}.log',  # Log file name
+    filename=f'runs/{args["incre_method"]}_{time_str}.log',  # Log file name
     level=logging.INFO,               # Log level
     format='%(asctime)s - %(levelname)s - %(message)s',  # Log format
     )
@@ -27,8 +27,13 @@ def train(args):
         incre_method.eval_task(data_manager)
     end_time = time.time()
     cost_time = end_time - start_time
-    logging.info(f"Total time: {cost_time}")
-    incre_method.save_task_weights(time_str)        
+    logging.info(f'Total time: {cost_time}')
+    incre_method.save_task_weights(time_str)   
+
+def get_incre_method(args):
+    incre_method = args["incre_method"].lower()
+    if incre_method == "kanfusion":
+        return KANFusion(args)     
           
     
     

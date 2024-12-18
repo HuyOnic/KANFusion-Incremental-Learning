@@ -18,8 +18,6 @@ class KANFusion(BaseIncremnetalMethod):
         super().__init__(args)
         self._incre_net =  IncrementalNet(model_name=args["model"], pretrain=False)
         self._task_weight = []
-        self._samples_memory = []
-        self._labels_memory = []
         
     def after_task(self):
         self._know_class = self._total_class
@@ -232,19 +230,19 @@ class KANFusion(BaseIncremnetalMethod):
                     all_acc[cls]=correct/len(test_dataset)
                     logging.info(f'Accuracy of class {cls}: {all_acc[cls]}')
 
-            all_acc['avg'] = sum([all_acc[cls] for cls in all_acc.keys()])/self._total_class
-            logging.info(f'Average Accuracy: {all_acc['avg']}')
+            all_acc["avg"] = sum([all_acc[cls] for cls in all_acc.keys()])/self._total_class
+            logging.info(f'Average Accuracy: {all_acc["avg"]}')
 
     
     def eval_selector(self, predict, labels): #Evaluate selector network
         return np.sum(predict==labels).item()/len(labels) 
     
     def save_task_weights(self, time_str):
-        task_name = f"exps/kanfusion/{self.args["incre_method"]}_task_{self._cur_task}"
+        task_name = f'exps/kanfusion/{self.args["incre_method"]}_task_{self._cur_task}'
         print(f'Saving task weights {task_name}')
         results = {f'Task{k}_Net':v.state_dict() for k,v in enumerate(self._task_weight)}
         results['Selector_Net'] = self._selector_net.state_dict()
-        torch.save(results, f"exps/kanfusion_{time_str}/model.pt")
+        torch.save(results, f'exps/kanfusion_{time_str}/model.pt')
 
 
 

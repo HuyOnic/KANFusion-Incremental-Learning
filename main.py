@@ -18,13 +18,13 @@ def load_json(path):
     return param
  
 def setup_parser():
-    parser = argparse.ArgumentParser(description="Config incremental learning")
-    parser.add_argument('--dataset', type=str, default="cifar100", help="Select a dataset")
-    parser.add_argument('--memory_size', type=int, default=10000, help="Size of examplar set")
+    parser = argparse.ArgumentParser(description="Config Incremental Learning")
+    parser.add_argument('--dataset', type=str, default="cifar100", help="Selecting dataset")
+    parser.add_argument('--memory_size', type=int, default=10000, help="Total Size of examplar set")
     parser.add_argument('--init_cls', type=int, default=50, help="Number classes on 1st task")
     parser.add_argument('--increment', type=int, default=10, help="Number classes per task")
-    parser.add_argument('--incre_method', type=str, default="kanfusion", help="Select Incremental Method")
-    parser.add_argument('--model', type=str, default="resnet32", help="Classification model")
+    parser.add_argument('--incre_method', type=str, default="kanfusion", help="Select A Incremental Method")
+    parser.add_argument('--model', type=str, default="resnet32", help="Select A Classification Model")
     parser.add_argument('--init_epochs', type=int, default=1, help="Number epochs of first task")
     parser.add_argument('--incre_epochs', type=int, default=5, help="Number epochs of N+1th task")
     return parser.parse_args()

@@ -113,6 +113,7 @@ class BaseIncremnetalMethod(object):
                 vectors = np.delete(vectors, idx, axis=0)
                 if len(vectors)==0:
                     break
+                
     def _extract_vectors(self, loader):
         self._incre_net.eval()
         vectors, targets = [], []
