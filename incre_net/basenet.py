@@ -43,7 +43,7 @@ class BaseNet(Module):
         return self.train(False)
 
     def load_checkpoints(self, args):
-        checkpoint_name = f"checkpoints/finetune_{args["incre_method"]}.pkl"
+        checkpoint_name = f'checkpoints/finetune_{args["incre_method"]}.pkl'
         model_info = torch.load(checkpoint_name)
         self.model.load_state_dict(model_info['model'])
         self.fc.load_state_dict(model_info['model'])

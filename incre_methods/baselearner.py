@@ -43,7 +43,7 @@ class BaseIncremnetalMethod(object):
             return (self._samples_memory, self._labels_memory)
     
     def save_checkpoint(self, test_acc):
-        checkpoint_name = f"exps/checkpoints/pretrained_{self.args["csv_name"]}"
+        checkpoint_name = f'exps/checkpoints/pretrained_{self.args["csv_name"]}'
         _checkpoint_cpu = copy.deepcopy(self._network)
         if isinstance(_checkpoint_cpu, nn.DataParallel):
             _checkpoint_cpu = _checkpoint_cpu.module
@@ -113,7 +113,7 @@ class BaseIncremnetalMethod(object):
                 vectors = np.delete(vectors, idx, axis=0)
                 if len(vectors)==0:
                     break
-                
+
     def _extract_vectors(self, loader):
         self._incre_net.eval()
         vectors, targets = [], []

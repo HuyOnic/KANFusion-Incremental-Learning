@@ -6,7 +6,7 @@ from collections import Counter
 from torch.utils.data import Dataset
 import torchvision
 import torchvision.transforms as transforms
-from torchvision.datasets import CIFAR10, CIFAR100
+from torchvision.datasets import CIFAR10, CIFAR100, MNIST
 sys.path.append(os.getcwd())
 from utils.dataset import Capture_128
 
@@ -48,11 +48,14 @@ class DataManager(object):
             train_dataset = Capture_128(root="dataset/Capture_train_128.feather", isTrain=False)
             test_dataset =  Capture_128(root="dataset/Capture_test_128.feather", isTrain=False)
         elif name == "cifar10":
-            train_dataset = CIFAR10(root="./dataset", isTrain=True, transform=transformations)
-            test_dataset =  CIFAR10(root="./dataset", isTrain=False, transform=transformations)
+            train_dataset = CIFAR10(root="./dataset", train=True, transform=transformations)
+            test_dataset =  CIFAR10(root="./dataset", train=False, transform=transformations)
         elif name == "cifar100":
             train_dataset = CIFAR100(root="./dataset", train=True, transform=transformations, download=True)
             test_dataset =  CIFAR100(root="./dataset", train=False, transform=transformations, download=True)
+        elif name == "mnist":
+            train_dataset = MNIST(root="./dataset", train=True, transform=transformations, download=True)
+            test_dataset =  MNIST(root="./dataset", train=False, transform=transformations, download=True)
         labels = sorted([data[1] for data in train_dataset])
         order = [label for label in range(len(np.unique(labels)))]
         if self.shuffle:

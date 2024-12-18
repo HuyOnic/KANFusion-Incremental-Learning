@@ -12,6 +12,7 @@ from torch import nn
 import copy
 import torch
 from model.CKAN import CKAN
+from model.KAN import KAN
 import logging
 class KANFusion(BaseIncremnetalMethod):
     def __init__(self, args) -> None:
@@ -27,7 +28,7 @@ class KANFusion(BaseIncremnetalMethod):
         self._cur_task+=1
         num_classes = data_manager.get_task_size(self._cur_task)
         self._total_class = self._know_class + num_classes
-        self._selector_net = CKAN(num_class=self._total_class)
+        self._selector_net = KAN([28*28, 32, self._total_class])
         self._incre_net.update_fc(self._total_class)
         self._incre_net.to(self._device)
         print(f'Task {self._cur_task}: Learning on class {self._know_class} - {self._total_class-1}')
@@ -36,7 +37,7 @@ class KANFusion(BaseIncremnetalMethod):
             num_known_classes = self._know_class, 
             total_classes = self._total_class,
             isTrain = True,
-            appendent = None #change this
+            appendent = None #Change this
         ) 
         train_loader = DataLoader(
                             train_dataset, 
@@ -155,8 +156,8 @@ class KANFusion(BaseIncremnetalMethod):
     def _building_examplar(self, data_manager, mem_per_class: int):
         '''
         args:
-            (Object) data_manager
-            int mem_per_class
+            (Object) : data_manager
+            int : mem_per_class
         '''
         print(f"Constructing examplar set ...({mem_per_class}) per class")
         for class_id in range(self._know_class, self._total_class):
