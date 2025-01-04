@@ -17,7 +17,7 @@ def train(args):
                                 seed=args["seed"])
     
     logging.basicConfig(
-    filename=f'runs/{args["incre_method"]}_{time_str}.log',  # Log file name
+    filename=filename,  # Log file name
     level=logging.INFO,               # Log level
     format='%(asctime)s - %(levelname)s - %(message)s',  # Log format
     )
