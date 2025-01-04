@@ -12,7 +12,7 @@ class KANLinear(torch.nn.Module):
         scale_base=1.0,
         scale_spline=1.0,
         enable_standalone_scale_spline=False,
-        base_activation=torch.nn.SiLU,
+        base_activation=torch.nn.SiLU(),
         grid_eps=0.02,
         grid_range=[0, 1],
     ):
@@ -32,7 +32,6 @@ class KANLinear(torch.nn.Module):
             .contiguous()
         )
         self.register_buffer("grid", grid)
-
         self.base_weight = torch.nn.Parameter(torch.Tensor(out_features, in_features))
         self.spline_weight = torch.nn.Parameter(
             torch.Tensor(out_features, in_features, grid_size + spline_order)

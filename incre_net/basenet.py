@@ -11,7 +11,6 @@ from model.resnet32 import ResNet32
 class BaseNet(Module):
     def __init__(self, model_name, pretrain=False) -> None:
         super().__init__()
-        self.model = ResNet32() #fix_this #feature extractor layers
         self.pretrain = pretrain
         self.fc = None # ouput layer
 

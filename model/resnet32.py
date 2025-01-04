@@ -65,6 +65,6 @@ class ResNet32(nn.Module):
 if __name__ == "__main__":
 # Create the model
     x = torch.randn(8, 3, 32, 32)
-    model = ResNet32(num_classes=100)  # For CIFAR-100
+    model = ResNet32()  # For CIFAR-100
     out = model(x)
     print(out.size())

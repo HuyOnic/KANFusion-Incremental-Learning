@@ -5,30 +5,27 @@ sys.path.append(os.getcwd())
 from incre_net.basenet import BaseNet
 from model.KANLinear import KANLinear
 from torch import nn
+from model.resnet32 import ResNet32
 
-
-class IncrementalNet(BaseNet):
+class IncrementalNet(BaseNet): # Used for ResNet32
     def __init__(self, model_name, pretrain=False):
         super().__init__(model_name, pretrain)
+        self.model = ResNet32()
 
     def update_fc(self, num_classes):
-        new_fc = self.generate_fc(out_dim=num_classes)
-        if self.fc is not None:
-            num_outputs = self.fc.out_features 
-            weight = copy.deepcopy(self.fc.weight.data)
-            bias = copy.deepcopy(self.fc.bias.data)
-            new_fc.weight.data[:num_outputs] = weight
-            new_fc.bias.data[:num_outputs] = bias
+        new_fc = nn.Linear(in_features=64, out_features=num_classes)
+        # if self.fc is not None:
+        #     num_outputs = self.fc.out_features 
+        #     weight = copy.deepcopy(self.fc.weight.data)
+        #     bias = copy.deepcopy(self.fc.bias.data)
+        #     new_fc.weight.data[:num_outputs] = weight
+        #     new_fc.bias.data[:num_outputs] = bias
         del self.fc 
         self.fc = new_fc
 
     def generate_fc(self, out_dim, in_dim=64):
         fc = nn.Linear(in_dim, out_dim)
         return fc
-    
-    # def unfreeze(self):
-    #     for param in self.parameters():
-    #         param.requires_grad = True
 
     def forward(self, x):
         x = self.model(x)

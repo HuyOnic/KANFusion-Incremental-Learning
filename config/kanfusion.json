@@ -11,5 +11,6 @@
     "init_epochs":1,
     "incre_epochs":1,
     "save_path":"runs/results.txt",
-    "selector_epochs":100
+    "selector_epochs":100,
+    "memory_size":50
 }

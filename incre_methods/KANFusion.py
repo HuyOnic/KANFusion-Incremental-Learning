@@ -14,6 +14,7 @@ import torch
 from model.CKAN import CKAN
 from model.KAN import KAN
 import logging
+from sklearn.naive_bayes import GaussianNB
 class KANFusion(BaseIncremnetalMethod):
     def __init__(self, args) -> None:
         super().__init__(args)
@@ -28,7 +29,7 @@ class KANFusion(BaseIncremnetalMethod):
         self._cur_task+=1
         num_classes = data_manager.get_task_size(self._cur_task)
         self._total_class = self._know_class + num_classes
-        self._selector_net = KAN([28*28, 32, self._total_class])
+        # self._selector_net = KAN([28*28, 32, self._current_task+1])
         self._incre_net.update_fc(self._total_class)
         self._incre_net.to(self._device)
         print(f'Task {self._cur_task}: Learning on class {self._know_class} - {self._total_class-1}')
@@ -54,9 +55,11 @@ class KANFusion(BaseIncremnetalMethod):
                 gamma=self.args["lr_decay"]
             )
             self._update_presentation(train_loader, optimizer, scheduler)
-            self._building_examplar(data_manager, 1000)
+            self._building_examplar(data_manager, self.args["memory_size"])
             #Train Selector Network
+            self._selector_net = KAN([32*32*3, 64, self._cur_task+1])
             self._train_selector_net(self._samples_memory, self._labels_memory) #Train selector after task 2
+
 
         else:
             optimizer = optim.SGD(
@@ -233,7 +236,6 @@ class KANFusion(BaseIncremnetalMethod):
 
             all_acc["avg"] = sum([all_acc[cls] for cls in all_acc.keys()])/self._total_class
             logging.info(f'Average Accuracy: {all_acc["avg"]}')
-
     
     def eval_selector(self, predict, labels): #Evaluate selector network
         return np.sum(predict==labels).item()/len(labels) 
