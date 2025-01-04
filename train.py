@@ -7,12 +7,15 @@ import time
 def train(args):
     start_time = time.time()
     time_str = datetime.datetime.now().strftime('%m%d-%H-%M-%S-%f')[:-3]
+    filename = f"runs/{args['incre_method']}_{time_str}.log"
+    f = open(filename, "x")
     data_manager = DataManager(
                                 dataset_name=args["dataset"], 
                                 shuffle=False, 
                                 init_cls=args["init_cls"], 
                                 increment=args["increment"], 
                                 seed=args["seed"])
+    
     logging.basicConfig(
     filename=f'runs/{args["incre_method"]}_{time_str}.log',  # Log file name
     level=logging.INFO,               # Log level

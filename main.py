@@ -12,7 +12,7 @@ def main():
     args = vars(args)
     param.update(args)
     train(param)
-
+   
 def load_json(path):
     with open(path) as f:
         param = json.load(f)
