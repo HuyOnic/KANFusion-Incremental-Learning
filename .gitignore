@@ -2,7 +2,7 @@ dataset
 *.pt
 exps
 main.ipynb
-runs
+runs/*
 exps
 data
 papers
