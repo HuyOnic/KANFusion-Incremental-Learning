@@ -3,7 +3,6 @@ from torch.utils.data import Dataset
 import pandas as pd
 from torchvision import transforms
 import numpy as np
-from utils.preprocessing import Preprocessing
 import matplotlib.pyplot as plt
 from collections import Counter
 from imblearn.under_sampling import RandomUnderSampler
@@ -20,11 +19,6 @@ class Capture_128(Dataset):
         data_frame = pd.read_feather(self.root) 
         samples = np.array(data_frame.iloc[:,1:-1])
         labels = np.array(data_frame.iloc[:,-1])
-        if self.isTrain:
-            pre_processing = Preprocessing()
-            # samples, labels = pre_processing.fit_transform(samples, labels) # Make balanced dataset
-            samples, labels = pre_processing.fit_transform(samples, labels, "under_sampling")
-            print(samples.shape)
         samples = samples/255
         return samples, labels 
     

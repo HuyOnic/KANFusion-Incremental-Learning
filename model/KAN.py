@@ -52,6 +52,9 @@ class KAN(torch.nn.Module):
         )
     
 if __name__=="__main__":
-    x = torch.rand((32,128))
-    model = KAN()
+    x = torch.rand((32,3,32,32))
+    if x.dim()>2:
+        x = x.view(x.size(0), -1)
+    model = KAN(layers_hidden=[32*32*3, 128, 32, 10])
     out = model(x)
+    print(out.size())

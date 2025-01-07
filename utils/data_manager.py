@@ -64,7 +64,7 @@ class DataManager(object):
         print("Class Order: ",order)
         return train_dataset, test_dataset, order
     
-    def get_data_of_task(self, num_known_classes, total_classes, isTrain, appendent=None): 
+    def get_data(self, num_known_classes, total_classes, isTrain, appendent=None): 
         all_classes_of_task = self._class_order[num_known_classes:total_classes]
         if isTrain:
             curr_dataset = self.train_dataset
@@ -77,9 +77,9 @@ class DataManager(object):
             for sample, label in appendent:
                 data_of_task.append(sample)
                 labels_of_task.append(label)
-        return np.array(data_of_task), np.array(labels_of_task), DummyDataset(data_of_task, labels_of_task)
+        return DummyDataset(data_of_task, labels_of_task)
 
-class DummyDataset(Dataset): #Only used for schema data
+class DummyDataset(Dataset): 
     def __init__(self, samples, labels) -> None:
         assert len(samples) == len(labels), "Data size error!"
         self.samples = samples
