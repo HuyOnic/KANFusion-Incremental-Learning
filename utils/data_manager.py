@@ -40,8 +40,7 @@ class DataManager(object):
         name = self.dataset_name.lower()
         transformations = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.4914, 0.4822, 0.4465], 
-                                std=[0.247, 0.243, 0.261])
+            transforms.Resize((32,32))
         ])
 
         if name == "capture_128":

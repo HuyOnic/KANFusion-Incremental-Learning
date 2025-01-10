@@ -35,7 +35,7 @@ class ResNet32(nn.Module):
         super(ResNet32, self).__init__()
         
         # Initial convolutional layer
-        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv1 = nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(16)
         
         # Residual layers
