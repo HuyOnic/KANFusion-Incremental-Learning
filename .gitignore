@@ -3,7 +3,7 @@ dataset
 exps
 main.ipynb
 runs/*
-exps
+exps/*
 data
 papers
 test.py

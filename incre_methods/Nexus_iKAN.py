@@ -77,8 +77,6 @@ class NexusiKAN(BaseIncremnetalMethod):
         criterion = nn.CrossEntropyLoss()
         for epoch in prog_bar:
             total_loss = 0
-            # correct = 0
-            # num_samples = 0
             for batch_idx, (samples, labels) in enumerate(train_loader):
                 samples = samples.to(self._device)
                 labels = labels.to(self._device)
@@ -89,11 +87,7 @@ class NexusiKAN(BaseIncremnetalMethod):
                 running_loss.backward()
                 optimizer.step()
                 total_loss+= running_loss.item()
-                # predict = torch.argmax(logits, dim=1)
-                # correct += (predict==labels).sum().item()
-                # total+=labels.size(0)
             scheduler.step()
-        # training_acc = correct/num_samples*100
             training_loss = total_loss/(batch_idx+1)
             if epoch%5==0:
                 prog_bar.write(f'Epoch {epoch} Loss {training_loss}')
@@ -103,8 +97,6 @@ class NexusiKAN(BaseIncremnetalMethod):
         criterion = nn.CrossEntropyLoss()
         for epoch in prog_bar:
             total_loss = 0
-            # correct = 0
-            # num_samples = 0
             for batch_idx, (samples, labels) in enumerate(train_loader):
                 samples = samples.to(self._device)
                 labels = labels.to(self._device)
@@ -115,11 +107,7 @@ class NexusiKAN(BaseIncremnetalMethod):
                 running_loss.backward()
                 optimizer.step()
                 total_loss+= running_loss.item()
-                # predict = torch.argmax(logits, dim=1)
-                # correct += (predict==labels).sum().item()
-                # total+=labels.size(0)
             scheduler.step()
-                # training_acc = correct/num_samples*100
             if epoch%5==0:
                 training_loss = total_loss/(batch_idx+1)
                 print(f'Epoch {epoch} Loss {training_loss}')
@@ -139,7 +127,6 @@ class NexusiKAN(BaseIncremnetalMethod):
                 samples = samples.to(self._device)
                 labels = labels.to(self._device)
                 optimizer.zero_grad()
-                # samples = samples.view(samples.size(0), -1)
                 logits = self._selector_net(samples)
                 labels = labels.to(torch.long)
                 running_loss = criterion(logits, labels) 
@@ -157,7 +144,7 @@ class NexusiKAN(BaseIncremnetalMethod):
             if isinstance(self._incre_net, nn.DataParallel):
                 _vectors = self._incre_net.module.extract_vector(_inputs.to(self._device)).cpu().data.numpy()
             else:
-                _vectors = self._incre_net.extract_vector(_inputs.to(self._device)).data.numpy()
+                _vectors = self._incre_net.extract_vector(_inputs.to(self._device)).cpu().data.numpy()
             vectors.append(_vectors)
             targets.append(_targets)
         return torch.tensor(np.concatenate(vectors)), torch.tensor(np.concatenate(targets))
@@ -168,7 +155,7 @@ class NexusiKAN(BaseIncremnetalMethod):
             (Object) : data_manager
             int : mem_per_class
         '''
-        print(f"Constructing examplar set ...({mem_per_class})")
+        print(f"Constructing examplar set ...({mem_per_class}) per class")
         for class_id in range(self._know_class, self._total_class):
             dataset = data_manager.get_data(class_id, class_id+1, isTrain=True)
             data_loader = DataLoader(dataset, batch_size=self.args["batch_size"], shuffle=False)
@@ -185,6 +172,7 @@ class NexusiKAN(BaseIncremnetalMethod):
         cls_order = cls_order[::-1]
         all_acc = {}
         all_models = [model.eval() for model in self._task_weight]
+        self._selector_net.eval()
         #Evaluate on all seen classes
         logging.info(f'Evaluate on all seen classes ...')
         with torch.no_grad():
