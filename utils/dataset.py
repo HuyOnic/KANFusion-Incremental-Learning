@@ -29,7 +29,6 @@ class Capture_128(Dataset):
         return torch.Tensor(self.samples[index]), int(self.labels[index])
     
 if __name__=="__main__":
-
     dataset = Capture_128('dataset/Capture_test_128.feather', isTrain=False)
     print(max(dataset.samples[:,0]))
     freqs = Counter(np.sort(dataset.labels))
