@@ -21,7 +21,7 @@ class NexusiKAN(BaseIncremnetalMethod):
         super().__init__(args)
         self._incre_net =  NodeModel(model_name=args["model"], pretrain=False)
         self._task_weight = []
-        self._selector_net = GaussianNB()
+        self._selector_net = NodeModel(model_name=args["model"], pretrain=False)
 
     def incremental_train(self, data_manager):
         self._cur_task+=1
@@ -53,14 +53,8 @@ class NexusiKAN(BaseIncremnetalMethod):
             self._update_presentation(train_loader, optimizer, scheduler)
             self._building_examplar(data_manager, self.args["memory_size"])
             #Train Selector Network
-            # self._selector_net.update_fc(self._cur_task+1)
-            # self._train_selector_net(self._samples_memory, self._labels_memory) #Train selector after task 2
-            x_train, x_test, y_train, y_test = train_test_split(self._samples_memory, self._labels_memory, test_size=0.2, random_state=42)
-            self._selector_net.fit(x_train, y_train)
-            #Evaluate Selector Network
-            pred = self._selector_net.predict(x_test)
-            acc = self.eval_selector(pred, y_test)
-            print(f'Accuracy of Selector Network: {acc}')
+            self._selector_net.update_fc(self._cur_task+1)
+            self._train_selector_net(self._samples_memory, self._labels_memory) #Train selector after task 2
         else:
             optimizer = optim.SGD(
                                 self._incre_net.parameters(), 
@@ -183,7 +177,7 @@ class NexusiKAN(BaseIncremnetalMethod):
             distances = torch.stack([torch.norm(vector-mean, p=2) for vector in vectors])
             _, indices = torch.topk(distances, mem_per_class, largest=False)
             for idx in indices:
-                self._samples_memory.append(dataset[idx][0].view(-1))
+                self._samples_memory.append(dataset[idx][0])
                 self._labels_memory.append(self._cur_task)
 
     def eval_task(self, data_manager, save_conf=False):
@@ -195,7 +189,7 @@ class NexusiKAN(BaseIncremnetalMethod):
         logging.info(f'Evaluate on all seen classes ...')
         with torch.no_grad():
             if self._cur_task>0: 
-                for cls in cls_order: # Load each class sequentially
+                for cls in cls_order:
                     correct = 0
                     test_dataset = data_manager.get_data( 
                                         num_known_classes = cls, 
@@ -205,17 +199,17 @@ class NexusiKAN(BaseIncremnetalMethod):
                     test_loader = DataLoader(
                                 test_dataset, 
                                 batch_size=self.args["batch_size"], 
-                                shuffle=False, 
+                                shuffle=True, 
                                 )
                     #Select model and Classify
                     for batch_idx, (samples, labels) in enumerate(test_loader):
-                        samples.to(self._device), labels.to(self._device)
-                        for sample, label in zip(samples, labels):
-                            selected_classifier = np.argmax(self._selector_net.predict(sample.view(-1).unsqueeze(0)))
-                            print(f"Class {cls} Selected Classifier: {selected_classifier}")
-                            pred = all_models[selected_classifier](sample.unsqueeze(0))
+                        samples = samples.to(self._device)
+                        labels = labels.to(self._device)
+                        selected_classifier = torch.argmax(self._selector_net(samples.view(samples)),dim=1)
+                        for i in range(len(selected_classifier)):
+                            pred = all_models[selected_classifier[i]](samples[i].unsqueeze(0))
                             pred_value = torch.argmax(pred, dim=1)
-                            correct += 1 if pred_value==label else 0
+                            correct += 1 if pred_value==labels[i] else 0
                     all_acc[cls]=correct/len(test_dataset)
                     logging.info(f'Accuracy of class {cls}: {all_acc[cls]}')
             else:
@@ -233,7 +227,8 @@ class NexusiKAN(BaseIncremnetalMethod):
                                 )
                     #Select model and Classify
                     for batch_idx, (samples, labels) in enumerate(test_loader):
-                        samples.to(self._device), labels.to(self._device)
+                        samples = samples.to(self._device)
+                        labels = labels.to(self._device)
                         pred = all_models[0](samples)
                         pred_value = torch.argmax(pred, dim=1)
                         correct += (pred_value==labels).sum().item()
@@ -251,7 +246,7 @@ class NexusiKAN(BaseIncremnetalMethod):
         print(f'Saving task weights {task_name}')
         results = {f'Task{k}_Net':v.state_dict() for k,v in enumerate(self._task_weight)}
         results['Selector_Net'] = self._selector_net
-        torch.save(results, f'exps/kanfusion_{time_str}/model.pt')
+        torch.save(results, f'exps/model.pt')
 
 
 
