@@ -194,7 +194,7 @@ class NexusiKAN(BaseIncremnetalMethod):
                         samples = samples.to(self._device)
                         labels = labels.to(self._device)
                         selected_classifier = torch.argmax(self._selector_net(samples),dim=1)
-                        print(selected_classifier)
+                        print(selected_classifier) 
                         for i in range(len(selected_classifier)):
                             pred = all_models[selected_classifier[i]](samples[i].unsqueeze(0))
                             pred_value = torch.argmax(pred, dim=1)
